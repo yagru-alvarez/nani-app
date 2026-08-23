@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Servicios para tu hogar en Camagüey</title>
+<title>Manos — Servicios para tu hogar en Camagüey</title>
 <style>
   :root{
     --terracota:#b5502e; --terracota-dark:#8a3a20;
@@ -221,7 +221,7 @@
   <!-- HOME TECNICO -->
   <div class="screen" id="screen-tech-home">
     <header class="topbar"><span class="logo">🏺 Manos</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
-    <h1 id="tech-greeting">Buenas, técnico.</h1>
+    <h1 id="tech-greeting">Buenas, técnico</h1>
     <p class="sub" id="tech-sub">Solicitudes disponibles en tu especialidad.</p>
     <div id="tech-request-list"></div>
     <nav class="tabbar">
@@ -231,13 +231,13 @@
     </nav>
   </div>
 
-  <!-- TRABAJO ACTIVO TÉCNICO -->
+  <!-- TRABAJO ACTIVO TECNICO -->
   <div class="screen" id="screen-tech-job">
     <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Trabajo</header>
     <div id="tech-job-content"></div>
   </div>
 
-  <!-- MIS TRABAJOS TÉCNICO -->
+  <!-- MIS TRABAJOS TECNICO -->
   <div class="screen" id="screen-tech-jobs">
     <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Mis trabajos</header>
     <div id="tech-jobs-list"></div>
@@ -273,13 +273,14 @@ let currentStars = 0;
 
 async function loadDB(){
   try{
-    const u = await window.storage.get('users_v1', true);
-    DB.users = u ? JSON.parse(u.value) : seedUsers();
-  }catch(e){ DB.users = seedUsers(); await saveUsers(); }
+    const u = localStorage.getItem('nani_users_v1');
+    DB.users = u ? JSON.parse(u) : seedUsers();
+    if(!u) await saveUsers();
+  }catch(e){ DB.users = seedUsers(); }
   try{
-    const r = await window.storage.get('requests_v1', true);
-    DB.requests = r ? JSON.parse(r.value) : [];
-  }catch(e){ DB.requests = []; await saveRequests(); }
+    const r = localStorage.getItem('nani_requests_v1');
+    DB.requests = r ? JSON.parse(r) : [];
+  }catch(e){ DB.requests = []; }
 }
 function seedUsers(){
   return {
@@ -287,8 +288,8 @@ function seedUsers(){
     'tecnico1': {password:'1234', role:'tecnico', name:'Reinier Molina', barrio:'La Vigía', specialty:'Plomería', rating:4.9, jobsDone:37}
   };
 }
-async function saveUsers(){ await window.storage.set('users_v1', JSON.stringify(DB.users), true); }
-async function saveRequests(){ await window.storage.set('requests_v1', JSON.stringify(DB.requests), true); }
+async function saveUsers(){ localStorage.setItem('nani_users_v1', JSON.stringify(DB.users)); }
+async function saveRequests(){ localStorage.setItem('nani_requests_v1', JSON.stringify(DB.requests)); }
 
 /* ---------- Navegación ---------- */
 function go(id){
