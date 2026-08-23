@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ñañí — Servicios para tu hogar en Camagüey</title>
+<style>
+  :root{
+    --terracota:#b5502e; --terracota-dark:#8a3a20;
+    --arena:#f2e9dc; --arena-dark:#e4d5bd;
+    --verde:#4c6b4f; --verde-dark:#374f39;
+    --tinta:#2c2620; --gris:#7a7166; --blanco:#fffaf3; --rojo:#a83232;
+    --radius:14px;
+    font-family:Georgia,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--arena-dark);display:flex;justify-content:center;padding:24px 12px;color:var(--tinta);}
+  #phone{width:390px;max-width:100%;background:var(--arena);border-radius:32px;border:8px solid var(--tinta);overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.25);min-height:780px;display:flex;flex-direction:column;position:relative;}
+  .screen{display:none;flex-direction:column;flex:1;padding:20px 18px 90px;overflow-y:auto;}
+  .screen.active{display:flex;}
+  header.topbar{background:var(--terracota);color:var(--blanco);padding:16px 18px;display:flex;align-items:center;gap:10px;font-weight:bold;}
+  header.topbar .back{cursor:pointer;font-size:20px;opacity:.9;}
+  h1{font-size:22px;margin:6px 0 4px;}
+  h2{font-size:16px;margin:16px 0 8px;color:var(--terracota-dark);}
+  p.sub{color:var(--gris);font-size:13.5px;margin:0 0 14px;line-height:1.5;}
+  .card{background:var(--blanco);border:1px solid var(--arena-dark);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:12px;}
+  .card.static{cursor:default;}
+  .card.selected{border:2px solid var(--terracota);background:#fff3ec;}
+  .icon-badge{width:42px;height:42px;border-radius:50%;background:var(--arena-dark);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .card .info{flex:1;min-width:0;}
+  .card .info b{font-size:15px;}
+  .card .info span{display:block;font-size:12.5px;color:var(--gris);margin-top:2px;}
+  button.primary{background:var(--terracota);color:var(--blanco);border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:bold;width:100%;cursor:pointer;}
+  button.primary:disabled{background:#c9b8a4;cursor:not-allowed;}
+  button.secondary{background:transparent;border:1.5px solid var(--terracota);color:var(--terracota-dark);padding:12px;border-radius:12px;font-weight:bold;width:100%;cursor:pointer;margin-top:8px;}
+  button.small{padding:8px 14px;font-size:13px;border-radius:10px;border:1.5px solid var(--terracota);background:var(--blanco);color:var(--terracota-dark);font-weight:bold;cursor:pointer;}
+  button.small.danger{border-color:var(--rojo);color:var(--rojo);}
+  .chip{display:inline-block;padding:6px 12px;border-radius:20px;background:var(--arena-dark);font-size:12.5px;margin:0 6px 6px 0;cursor:pointer;border:1.5px solid transparent;}
+  .chip.selected{background:var(--verde);color:var(--blanco);border-color:var(--verde-dark);}
+  nav.tabbar{position:absolute;bottom:0;left:0;right:0;background:var(--blanco);border-top:1px solid var(--arena-dark);display:flex;padding:8px 6px 12px;}
+  nav.tabbar .tab{flex:1;text-align:center;font-size:11px;color:var(--gris);cursor:pointer;}
+  nav.tabbar .tab.active{color:var(--terracota-dark);font-weight:bold;}
+  nav.tabbar .tab .ti{display:block;font-size:20px;margin-bottom:2px;}
+  .pin{font-size:36px;letter-spacing:10px;font-weight:bold;color:var(--terracota-dark);text-align:center;margin:14px 0;}
+  .status-line{display:flex;align-items:center;gap:10px;margin:10px 0;}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--arena-dark);flex-shrink:0;}
+  .dot.done{background:var(--verde);}
+  .dot.active{background:var(--terracota);box-shadow:0 0 0 4px #b5502e33;}
+  .status-line span{font-size:13.5px;}
+  .status-line span.done{color:var(--verde-dark);font-weight:bold;}
+  .avatar{width:44px;height:44px;border-radius:50%;background:var(--verde);color:var(--blanco);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px;flex-shrink:0;}
+  .price-row{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-bottom:1px dashed var(--arena-dark);}
+  .price-row.total{font-weight:bold;font-size:16px;border-bottom:none;padding-top:10px;}
+  select,input[type=text],input[type=password],input[type=number]{width:100%;padding:12px;border-radius:10px;border:1px solid var(--arena-dark);background:var(--blanco);font-size:14px;margin-bottom:12px;}
+  label.field-label{font-size:12.5px;color:var(--gris);display:block;margin-bottom:4px;}
+  .empty-icon{font-size:38px;text-align:center;margin:26px 0 8px;}
+  .center-text{text-align:center;color:var(--gris);font-size:13.5px;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:bold;}
+  .badge.pendiente{background:#f0e0c8;color:#8a5a20;}
+  .badge.aceptada{background:#dbe6dc;color:var(--verde-dark);}
+  .badge.encurso{background:#fde3c9;color:var(--terracota-dark);}
+  .badge.completada{background:#d9e9db;color:var(--verde-dark);}
+  .badge.pagada{background:#cfe3d1;color:var(--verde-dark);}
+  .toggle-row{display:flex;gap:8px;margin-bottom:14px;}
+  .toggle-row .opt{flex:1;text-align:center;padding:12px;border-radius:10px;border:1.5px solid var(--arena-dark);cursor:pointer;font-weight:bold;font-size:13.5px;}
+  .toggle-row .opt.selected{border-color:var(--terracota);background:#fff3ec;color:var(--terracota-dark);}
+  .err{color:var(--rojo);font-size:12.5px;margin:-6px 0 10px;}
+  .tag-role{font-size:10px;background:var(--verde);color:#fff;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;}
+  .loading{text-align:center;color:var(--gris);font-size:13px;padding:20px;}
+</style>
+</head>
+<body>
+<div id="phone">
+
+  <div class="screen active" id="screen-loading">
+    <div class="loading" style="margin:auto;">Cargando Ñañí…</div>
+  </div>
+
+  <!-- AUTH -->
+  <div class="screen" id="screen-auth">
+    <div style="padding:30px 6px 10px; text-align:center;">
+      <div style="font-size:44px;">🏺</div>
+      <h1>Ñañí</h1>
+      <p class="sub">Servicios para el hogar en Camagüey</p>
+    </div>
+
+    <div class="toggle-row">
+      <div class="opt selected" id="authtab-login" onclick="setAuthTab('login')">Entrar</div>
+      <div class="opt" id="authtab-register" onclick="setAuthTab('register')">Crear cuenta</div>
+    </div>
+
+    <div id="login-block">
+      <label class="field-label">Usuario</label>
+      <input type="text" id="login-user" placeholder="tu_usuario">
+      <label class="field-label">Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••">
+      <div class="err" id="login-err"></div>
+      <button class="primary" onclick="doLogin()">Entrar</button>
+      <p class="center-text" style="margin-top:14px;">Prueba: <b>cliente1</b>/<b>1234</b> o <b>tecnico1</b>/<b>1234</b></p>
+    </div>
+
+    <div id="register-block" style="display:none;">
+      <label class="field-label">Soy...</label>
+      <div class="toggle-row">
+        <div class="opt selected" id="reg-role-cliente" onclick="setRegRole('cliente')">Cliente</div>
+        <div class="opt" id="reg-role-tecnico" onclick="setRegRole('tecnico')">Técnico</div>
+      </div>
+      <label class="field-label">Nombre completo</label>
+      <input type="text" id="reg-name" placeholder="Ej: Yudelkis Pérez">
+      <label class="field-label">Usuario</label>
+      <input type="text" id="reg-user" placeholder="Elige un usuario">
+      <label class="field-label">Contraseña</label>
+      <input type="password" id="reg-pass" placeholder="Elige una contraseña">
+      <label class="field-label">Reparto</label>
+      <select id="reg-barrio">
+        <option>La Caridad</option><option>La Vigía</option><option>Garrido</option>
+        <option>Puerto Príncipe</option><option>Reparto Previsora</option><option>La Zambrana</option><option>Centro Ciudad</option>
+      </select>
+      <div id="reg-specialty-block" style="display:none;">
+        <label class="field-label">Especialidad</label>
+        <select id="reg-specialty">
+          <option>Plomería</option><option>Electricidad</option><option>Refrigeración</option>
+          <option>Albañilería</option><option>Cerrajería</option>
+        </select>
+      </div>
+      <div class="err" id="register-err"></div>
+      <button class="primary" onclick="doRegister()">Crear cuenta</button>
+    </div>
+  </div>
+
+  <!-- HOME CLIENTE -->
+  <div class="screen" id="screen-home">
+    <header class="topbar"><span class="logo">🏺 Ñañí</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
+    <div style="padding-top:6px;">
+      <h1 id="home-greeting">Buenas, vecino.</h1>
+      <p class="sub">¿Qué se te rompió hoy? Conecta con técnicos verificados de tu barrio.</p>
+      <h2>Elige un servicio</h2>
+      <div id="service-list"></div>
+    </div>
+    <nav class="tabbar">
+      <div class="tab active" onclick="go('screen-home')"><span class="ti">🏠</span>Inicio</div>
+      <div class="tab" onclick="renderClientActivity();go('screen-activity')"><span class="ti">📋</span>Mis pedidos</div>
+      <div class="tab" onclick="renderProfile();go('screen-profile')"><span class="ti">👤</span>Perfil</div>
+    </nav>
+  </div>
+
+  <!-- DETALLE DE SOLICITUD -->
+  <div class="screen" id="screen-detail">
+    <header class="topbar"><span class="back" onclick="go('screen-home')">←</span><span id="detail-title">Servicio</span></header>
+    <p class="sub" id="detail-desc"></p>
+    <h2>¿En qué reparto estás?</h2>
+    <select id="barrio">
+      <option>La Caridad</option><option>La Vigía</option><option>Garrido</option>
+      <option>Puerto Príncipe</option><option>Reparto Previsora</option><option>La Zambrana</option><option>Centro Ciudad</option>
+    </select>
+    <h2>¿Para cuándo lo necesitas?</h2>
+    <span class="chip selected" onclick="chip(this,'urgencia')">Ahora mismo</span>
+    <span class="chip" onclick="chip(this,'urgencia')">Hoy más tarde</span>
+    <span class="chip" onclick="chip(this,'urgencia')">Mañana</span>
+    <h2>Cuéntanos el problema</h2>
+    <input type="text" id="detalle-txt" placeholder="Ej: se rompió la llave del baño">
+    <div class="err" id="detail-err"></div>
+    <button class="primary" onclick="submitRequest()" style="margin-top:auto;">Buscar técnico</button>
+  </div>
+
+  <!-- BUSCANDO TECNICO -->
+  <div class="screen" id="screen-matching">
+    <header class="topbar"><span class="back" onclick="go('screen-home')">←</span>Buscando técnico</header>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div style="font-size:52px;">📡</div>
+      <p style="font-weight:bold;margin-top:16px;" id="matching-text">Publicando tu solicitud a técnicos de la zona…</p>
+      <p class="center-text">Un técnico disponible la aceptará en breve.</p>
+    </div>
+  </div>
+
+  <!-- SEGUIMIENTO CLIENTE -->
+  <div class="screen" id="screen-tracking">
+    <header class="topbar"><span class="back" onclick="go('screen-home')">←</span>Tu solicitud</header>
+    <div id="tracking-content"></div>
+  </div>
+
+  <!-- PAGO -->
+  <div class="screen" id="screen-payment">
+    <header class="topbar"><span class="back" onclick="go('screen-tracking')">←</span>Pago del servicio</header>
+    <div id="payment-content"></div>
+  </div>
+
+  <!-- DONE -->
+  <div class="screen" id="screen-done">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div style="font-size:56px;">✅</div>
+      <h1>¡Listo!</h1>
+      <p class="sub">Tu problema quedó resuelto. Califica a tu técnico para ayudar a otros vecinos.</p>
+      <div style="font-size:28px;margin:8px 0;cursor:pointer;" id="stars">☆ ☆ ☆ ☆ ☆</div>
+      <button class="primary" onclick="go('screen-home')">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- MIS PEDIDOS CLIENTE -->
+  <div class="screen" id="screen-activity">
+    <header class="topbar"><span class="back" onclick="go('screen-home')">←</span>Mis pedidos</header>
+    <div id="activity-list"></div>
+    <nav class="tabbar">
+      <div class="tab" onclick="go('screen-home')"><span class="ti">🏠</span>Inicio</div>
+      <div class="tab active"><span class="ti">📋</span>Mis pedidos</div>
+      <div class="tab" onclick="renderProfile();go('screen-profile')"><span class="ti">👤</span>Perfil</div>
+    </nav>
+  </div>
+
+  <!-- PERFIL -->
+  <div class="screen" id="screen-profile">
+    <header class="topbar"><span class="back" onclick="go('screen-home')">←</span>Mi perfil</header>
+    <div id="profile-content"></div>
+    <nav class="tabbar">
+      <div class="tab" onclick="go('screen-home')"><span class="ti">🏠</span>Inicio</div>
+      <div class="tab" onclick="renderClientActivity();go('screen-activity')"><span class="ti">📋</span>Mis pedidos</div>
+      <div class="tab active"><span class="ti">👤</span>Perfil</div>
+    </nav>
+  </div>
+
+  <!-- HOME TECNICO -->
+  <div class="screen" id="screen-tech-home">
+    <header class="topbar"><span class="logo">🏺 Ñañí</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
+    <h1 id="tech-greeting">Buenas, socio.</h1>
+    <p class="sub" id="tech-sub">Solicitudes disponibles en tu especialidad.</p>
+    <div id="tech-request-list"></div>
+    <nav class="tabbar">
+      <div class="tab active" onclick="renderTechHome();go('screen-tech-home')"><span class="ti">🛠️</span>Solicitudes</div>
+      <div class="tab" onclick="renderTechJobs();go('screen-tech-jobs')"><span class="ti">📋</span>Mis trabajos</div>
+      <div class="tab" onclick="renderProfile();go('screen-profile')"><span class="ti">👤</span>Perfil</div>
+    </nav>
+  </div>
+
+  <!-- TRABAJO ACTIVO TECNICO -->
+  <div class="screen" id="screen-tech-job">
+    <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Trabajo</header>
+    <div id="tech-job-content"></div>
+  </div>
+
+  <!-- MIS TRABAJOS TECNICO -->
+  <div class="screen" id="screen-tech-jobs">
+    <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Mis trabajos</header>
+    <div id="tech-jobs-list"></div>
+    <nav class="tabbar">
+      <div class="tab" onclick="renderTechHome();go('screen-tech-home')"><span class="ti">🛠️</span>Solicitudes</div>
+      <div class="tab active"><span class="ti">📋</span>Mis trabajos</div>
+      <div class="tab" onclick="renderProfile();go('screen-profile')"><span class="ti">👤</span>Perfil</div>
+    </nav>
+  </div>
+
+</div>
+
+<script>
+/* ---------- "Base de datos" JSON persistente (window.storage, compartida) ---------- */
+const DB_USERS_KEY = 'nani:users';
+const DB_REQUESTS_KEY = 'nani:requests';
+
+const SERVICES = [
+  {id:'plomeria', name:'Plomería', icon:'🚰', desc:'Fugas, tuberías, tanques y bombas'},
+  {id:'electricidad', name:'Electricidad', icon:'⚡', desc:'Apagones, cortos, instalaciones'},
+  {id:'refrigeracion', name:'Refrigeración', icon:'❄️', desc:'Refrigeradores, split, ventiladores'},
+  {id:'albanileria', name:'Albañilería', icon:'🧱', desc:'Reparaciones, filtraciones, pintura'},
+  {id:'cerrajeria', name:'Cerrajería', icon:'🔑', desc:'Llaves, candados, cerraduras'}
+];
+
+let DB = { users:{}, requests:[] };
+let SESSION = null;         // {username}
+let selectedServiceId = null;
+let selectedUrgencia = 'Ahora mismo';
+let currentTrackingId = null;
+let currentTechJobId = null;
+let currentStars = 0;
+
+async function loadDB(){
+  try{
+    const u = await window.storage.get('users_v1', true);
+    DB.users = u ? JSON.parse(u.value) : seedUsers();
+  }catch(e){ DB.users = seedUsers(); await saveUsers(); }
+  try{
+    const r = await window.storage.get('requests_v1', true);
+    DB.requests = r ? JSON.parse(r.value) : [];
+  }catch(e){ DB.requests = []; await saveRequests(); }
+}
+function seedUsers(){
+  return {
+    'cliente1': {password:'1234', role:'cliente', name:'Yudelkis Pérez', barrio:'La Caridad'},
+    'tecnico1': {password:'1234', role:'tecnico', name:'Reinier Molina', barrio:'La Vigía', specialty:'Plomería', rating:4.9, jobsDone:37}
+  };
+}
+async function saveUsers(){ await window.storage.set('users_v1', JSON.stringify(DB.users), true); }
+async function saveRequests(){ await window.storage.set('requests_v1', JSON.stringify(DB.requests), true); }
+
+/* ---------- Navegación ---------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------- Auth ---------- */
+function setAuthTab(tab){
+  document.getElementById('authtab-login').classList.toggle('selected', tab==='login');
+  document.getElementById('authtab-register').classList.toggle('selected', tab==='register');
+  document.getElementById('login-block').style.display = tab==='login' ? 'block':'none';
+  document.getElementById('register-block').style.display = tab==='register' ? 'block':'none';
+}
+let regRole = 'cliente';
+function setRegRole(role){
+  regRole = role;
+  document.getElementById('reg-role-cliente').classList.toggle('selected', role==='cliente');
+  document.getElementById('reg-role-tecnico').classList.toggle('selected', role==='tecnico');
+  document.getElementById('reg-specialty-block').style.display = role==='tecnico' ? 'block':'none';
+}
+async function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  if(!u || !p){ errEl.textContent = 'Escribe tu usuario y contraseña.'; return; }
+  const rec = DB.users[u];
+  if(!rec || rec.password !== p){ errEl.textContent = 'Usuario o contraseña incorrectos.'; return; }
+  SESSION = { username:u };
+  enterApp();
+}
+async function doRegister(){
+  const name = document.getElementById('reg-name').value.trim();
+  const user = document.getElementById('reg-user').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const barrio = document.getElementById('reg-barrio').value;
+  const errEl = document.getElementById('register-err');
+  errEl.textContent = '';
+  if(!name || !user || !pass){ errEl.textContent = 'Completa todos los campos.'; return; }
+  if(DB.users[user]){ errEl.textContent = 'Ese usuario ya existe, elige otro.'; return; }
+  const rec = { password:pass, role:regRole, name, barrio };
+  if(regRole === 'tecnico'){
+    rec.specialty = document.getElementById('reg-specialty').value;
+    rec.rating = 5.0;
+    rec.jobsDone = 0;
+  }
+  DB.users[user] = rec;
+  await saveUsers();
+  SESSION = { username:user };
+  enterApp();
+}
+function doLogout(){
+  SESSION = null;
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  go('screen-auth');
+}
+function currentUser(){ return DB.users[SESSION.username]; }
+
+function enterApp(){
+  const u = currentUser();
+  if(u.role === 'cliente'){
+    document.getElementById('home-greeting').textContent = 'Buenas, ' + u.name.split(' ')[0] + '.';
+    renderServiceList();
+    go('screen-home');
+  } else {
+    renderTechHome();
+    go('screen-tech-home');
+  }
+}
+
+/* ---------- CLIENTE: elegir servicio ---------- */
+function renderServiceList(){
+  const el = document.getElementById('service-list');
+  el.innerHTML = '';
+  SERVICES.forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.onclick = ()=>openDetail(s.id);
+    div.innerHTML = `<div class="icon-badge">${s.icon}</div><div class="info"><b>${s.name}</b><span>${s.desc}</span></div>`;
+    el.appendChild(div);
+  });
+}
+function openDetail(serviceId){
+  selectedServiceId = serviceId;
+  const s = SERVICES.find(x=>x.id===serviceId);
+  document.getElementById('detail-title').textContent = s.name;
+  document.getElementById('detail-desc').textContent = s.desc;
+  document.getElementById('detalle-txt').value = '';
+  document.getElementById('detail-err').textContent = '';
+  selectedUrgencia = 'Ahora mismo';
+  document.querySelectorAll('#screen-detail .chip').forEach((c,i)=>c.classList.toggle('selected', i===0));
+  go('screen-detail');
+}
+function chip(el, group){
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  if(group==='urgencia') selectedUrgencia = el.textContent;
+}
+async function submitRequest(){
+  const detalle = document.getElementById('detalle-txt').value.trim();
+  const errEl = document.getElementById('detail-err');
+  if(!detalle){ errEl.textContent = 'Cuéntanos brevemente qué pasó.'; return; }
+  errEl.textContent = '';
+  const s = SERVICES.find(x=>x.id===selectedServiceId);
+  const req = {
+    id: 'req_' + Date.now(),
+    clientUsername: SESSION.username,
+    serviceId: s.id,
+    serviceName: s.name,
+    barrio: document.getElementById('barrio').value,
+    urgencia: selectedUrgencia,
+    detalle,
+    status: 'pendiente',
+    technicianUsername: null,
+    pin: String(Math.floor(1000 + Math.random()*9000)),
+    price: 700 + Math.floor(Math.random()*5) * 100,
+    paymentMethod: null,
+    createdAt: Date.now(),
+    rating: null
+  };
+  DB.requests.push(req);
+  await saveRequests();
+  currentTrackingId = req.id;
+  go('screen-matching');
+  document.getElementById('matching-text').textContent = 'Publicando tu solicitud a técnicos de la zona…';
+  pollForAcceptance(req.id);
+}
+async function pollForAcceptance(reqId){
+  await loadDB();
+  const req = DB.requests.find(r=>r.id===reqId);
+  if(!req){ return; }
+  if(req.status !== 'pendiente'){
+    renderTracking(reqId);
+    go('screen-tracking');
+    return;
+  }
+  document.getElementById('matching-text').textContent = 'Esperando que un técnico acepte tu solicitud…';
+  setTimeout(()=>pollForAcceptance(reqId), 1800);
+}
+
+/* ---------- CLIENTE: seguimiento ---------- */
+function renderTracking(reqId){
+  currentTrackingId = reqId;
+  const req = DB.requests.find(r=>r.id===reqId);
+  const el = document.getElementById('tracking-content');
+  if(!req){ el.innerHTML = '<p class="center-text">Esta solicitud ya no existe.</p>'; return; }
+  const tech = req.technicianUsername ? DB.users[req.technicianUsername] : null;
+  const steps = ['pendiente','aceptada','encamino','encurso','completada'];
+  const stepLabels = {
+    pendiente:'Solicitud publicada',
+    aceptada:'Técnico asignado',
+    encamino:'Técnico en camino',
+    encurso:'Servicio en curso',
+    completada:'Servicio completado'
+  };
+  const idx = steps.indexOf(req.status);
+  let html = '';
+  if(tech){
+    html += `<div class="card static"><div class="avatar">${initials(tech.name)}</div><div class="info">
+      <b>${tech.name}</b><span>★ ${tech.rating||5} · ${tech.specialty} · ${tech.barrio}</span></div></div>`;
+  } else {
+    html += `<p class="sub">Buscando técnico disponible en ${req.barrio}…</p>`;
+  }
+  html += '<h2>Estado del servicio</h2>';
+  steps.forEach((st,i)=>{
+    const done = i < idx || req.status === 'completada' && i<=idx;
+    const active = i === idx && req.status !== 'completada';
+    html += `<div class="status-line"><div class="dot ${i<=idx?'done':''} ${active?'active':''}"></div><span class="${i<=idx?'done':''}">${stepLabels[st]}</span></div>`;
+  });
+  if(tech){
+    html += `<h2>Código de validación</h2><p class="sub">Compártelo con el técnico solo cuando llegue a tu casa.</p><div class="pin">${req.pin}</div>`;
+  }
+  if(req.status === 'completada' && !req.paymentMethod){
+    html += `<button class="primary" onclick="openPayment('${req.id}')">Ir a pagar</button>`;
+  } else if(req.paymentMethod){
+    html += `<div class="badge pagada">Pagado · ${req.paymentMethod}</div>`;
+    html += `<button class="secondary" onclick="go('screen-home')">Volver al inicio</button>`;
+  } else {
+    html += `<button class="secondary" onclick="refreshTracking('${req.id}')">Actualizar estado</button>`;
+  }
+  el.innerHTML = html;
+}
+async function refreshTracking(reqId){ await loadDB(); renderTracking(reqId); }
+
+/* ---------- CLIENTE: pago ---------- */
+let selectedPayMethod = 'Efectivo (CUP)';
+function openPayment(reqId){
+  currentTrackingId = reqId;
+  const req = DB.requests.find(r=>r.id===reqId);
+  selectedPayMethod = 'Efectivo (CUP)';
+  const el = document.getElementById('payment-content');
+  el.innerHTML = `
+    <h2>Resumen</h2>
+    <div class="price-row"><span>Diagnóstico y mano de obra</span><span>${req.price} CUP</span></div>
+    <div class="price-row"><span>Materiales (si aplica)</span><span>Se acuerda con el técnico</span></div>
+    <div class="price-row total"><span>Total estimado</span><span>${req.price} CUP</span></div>
+    <h2>Forma de pago</h2>
+    <span class="chip selected" onclick="chip(this,'pago')" data-m="Efectivo (CUP)">Efectivo (CUP)</span>
+    <span class="chip" onclick="chip(this,'pago')" data-m="Transferencia">Transferencia (Enzona/Transfermóvil)</span>
+    <span class="chip" onclick="chip(this,'pago')" data-m="MLC">MLC</span>
+    <p class="sub" style="margin-top:14px;">El pago se libera al técnico solo cuando confirmas que el trabajo quedó a tu satisfacción.</p>
+    <button class="primary" onclick="confirmPayment('${req.id}')">Confirmar trabajo terminado</button>
+  `;
+  go('screen-payment');
+}
+function chip(el, group){
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  if(group==='urgencia') selectedUrgencia = el.textContent;
+  if(group==='pago') selectedPayMethod = el.getAttribute('data-m');
+}
+async function confirmPayment(reqId){
+  await loadDB();
+  const req = DB.requests.find(r=>r.id===reqId);
+  req.paymentMethod = selectedPayMethod;
+  await saveRequests();
+  currentStars = 0;
+  renderStars();
+  go('screen-done');
+}
+function renderStars(){
+  const starsEl = document.getElementById('stars');
+  starsEl.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const s = document.createElement('span');
+    s.textContent = i<=currentStars ? '★' : '☆';
+    s.style.cursor='pointer';
+    s.onclick = async ()=>{
+      currentStars = i;
+      renderStars();
+      await loadDB();
+      const req = DB.requests.find(r=>r.id===currentTrackingId);
+      if(req){ req.rating = i; await saveRequests(); }
+    };
+    starsEl.appendChild(s);
+  }
+}
+
+/* ---------- CLIENTE: mis pedidos ---------- */
+async function renderClientActivity(){
+  await loadDB();
+  const el = document.getElementById('activity-list');
+  const mine = DB.requests.filter(r=>r.clientUsername===SESSION.username).sort((a,b)=>b.createdAt-a.createdAt);
+  if(mine.length===0){
+    el.innerHTML = '<div class="empty-icon">🗂️</div><p class="center-text">Aún no has hecho ninguna solicitud.</p>';
+    return;
+  }
+  el.innerHTML = mine.map(r=>`
+    <div class="card" onclick="openTrackingFromList('${r.id}')">
+      <div class="icon-badge">${SERVICES.find(s=>s.id===r.serviceId).icon}</div>
+      <div class="info"><b>${r.serviceName}</b><span>${r.barrio} · ${new Date(r.createdAt).toLocaleDateString()}</span></div>
+      <div class="badge ${statusClass(r)}">${statusLabel(r)}</div>
+    </div>`).join('');
+}
+function openTrackingFromList(reqId){
+  const req = DB.requests.find(r=>r.id===reqId);
+  if(req.paymentMethod){
+    renderTracking(reqId); go('screen-tracking'); return;
+  }
+  renderTracking(reqId);
+  go('screen-tracking');
+}
+function statusClass(r){
+  if(r.paymentMethod) return 'pagada';
+  return r.status==='pendiente' ? 'pendiente' : (r.status==='completada' ? 'completada' : 'encurso');
+}
+function statusLabel(r){
+  if(r.paymentMethod) return 'Pagado';
+  const map = {pendiente:'Pendiente', aceptada:'Aceptada', encamino:'En camino', encurso:'En curso', completada:'Por pagar'};
+  return map[r.status] || r.status;
+}
+
+/* ---------- PERFIL (ambos roles) ---------- */
+function renderProfile(){
+  const u = currentUser();
+  const el = document.getElementById('profile-content');
+  let html = `<div class="card static"><div class="avatar">${initials(u.name)}</div><div class="info"><b>${u.name}</b><span>Reparto: ${u.barrio}</span></div></div>`;
+  if(u.role==='tecnico'){
+    html += `<div class="card static"><div class="info"><b>Especialidad</b><span>${u.specialty}</span></div></div>`;
+    html += `<div class="card static"><div class="info"><b>Calificación</b><span>★ ${u.rating} · ${u.jobsDone} trabajos realizados</span></div></div>`;
+  }
+  html += `<h2>Ajustes</h2>`;
+  html += `<div class="card static"><div class="info"><b>Métodos de pago</b><span>Efectivo, Enzona, Transfermóvil, MLC</span></div></div>`;
+  html += `<div class="card static"><div class="info"><b>Soporte</b><span>Escríbenos si algo salió mal</span></div></div>`;
+  html += `<button class="secondary" onclick="doLogout()">Cerrar sesión</button>`;
+  el.innerHTML = html;
+}
+function initials(name){
+  return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+
+/* ---------- TECNICO: solicitudes disponibles ---------- */
+async function renderTechHome(){
+  await loadDB();
+  const u = currentUser();
+  document.getElementById('tech-greeting').textContent = 'Buenas, ' + u.name.split(' ')[0] + '.';
+  document.getElementById('tech-sub').textContent = `Solicitudes de ${u.specialty} disponibles cerca de ti.`;
+  const el = document.getElementById('tech-request-list');
+  const available = DB.requests.filter(r=>r.status==='pendiente' && r.serviceName===u.specialty);
+  if(available.length===0){
+    el.innerHTML = '<div class="empty-icon">📭</div><p class="center-text">No hay solicitudes nuevas de tu especialidad ahora mismo.</p>';
+    return;
+  }
+  el.innerHTML = available.map(r=>`
+    <div class="card static">
+      <div class="icon-badge">${SERVICES.find(s=>s.id===r.serviceId).icon}</div>
+      <div class="info"><b>${r.serviceName}</b><span>${r.barrio} · ${r.urgencia}</span><span>"${escapeHtml(r.detalle)}"</span></div>
+    </div>
+    <button class="primary" style="margin-bottom:16px;" onclick="acceptRequest('${r.id}')">Aceptar solicitud</button>
+  `).join('');
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+async function acceptRequest(reqId){
+  await loadDB();
+  const req = DB.requests.find(r=>r.id===reqId);
+  if(!req || req.status !== 'pendiente'){ await renderTechHome(); return; }
+  req.status = 'aceptada';
+  req.technicianUsername = SESSION.username;
+  await saveRequests();
+  openTechJob(reqId);
+}
+
+/* ---------- TECNICO: trabajo activo ---------- */
+function openTechJob(reqId){
+  currentTechJobId = reqId;
+  renderTechJob();
+  go('screen-tech-job');
+}
+function renderTechJob(){
+  const req = DB.requests.find(r=>r.id===currentTechJobId);
+  const el = document.getElementById('tech-job-content');
+  if(!req){ el.innerHTML = '<p class="center-text">Trabajo no encontrado.</p>'; return; }
+  const client = DB.users[req.clientUsername];
+  let actionBtn = '';
+  if(req.status==='aceptada') actionBtn = `<button class="primary" onclick="advanceJob('encamino')">Marcar: voy en camino</button>`;
+  else if(req.status==='encamino') actionBtn = `<div style="margin:14px 0;"><label class="field-label">Pide al cliente el código de validación</label><input type="text" id="pin-input" placeholder="0000" maxlength="4"><div class="err" id="pin-err"></div><button class="primary" onclick="validatePin()">Validar y comenzar</button></div>`;
+  else if(req.status==='encurso') actionBtn = `<button class="primary" onclick="advanceJob('completada')">Marcar servicio terminado</button>`;
+  else if(req.status==='completada') actionBtn = req.paymentMethod
+      ? `<div class="badge pagada">Pago recibido · ${req.paymentMethod}</div><button class="secondary" onclick="renderTechHome();go('screen-tech-home')">Volver</button>`
+      : `<p class="sub">Esperando que el cliente confirme el pago.</p><button class="secondary" onclick="refreshTechJob()">Actualizar</button>`;
+
+  el.innerHTML = `
+    <div class="card static"><div class="avatar">${initials(client.name)}</div><div class="info"><b>${client.name}</b><span>${req.barrio}</span></div></div>
+    <h2>Detalles</h2>
+    <p class="sub">${req.serviceName} · ${req.urgencia}<br>"${escapeHtml(req.detalle)}"</p>
+    <div class="badge ${statusClass(req)}">${statusLabel(req)}</div>
+    ${actionBtn}
+  `;
+}
+async function advanceJob(newStatus){
+  await loadDB();
+  const req = DB.requests.find(r=>r.id===currentTechJobId);
+  req.status = newStatus;
+  if(newStatus==='completada'){
+    const tech = DB.users[SESSION.username];
+    tech.jobsDone = (tech.jobsDone||0) + 1;
+  }
+  await saveRequests();
+  if(newStatus==='completada') await saveUsers();
+  renderTechJob();
+}
+async function validatePin(){
+  const val = document.getElementById('pin-input').value.trim();
+  await loadDB();
+  const req = DB.requests.find(r=>r.id===currentTechJobId);
+  if(val !== req.pin){
+    document.getElementById('pin-err').textContent = 'Código incorrecto, pídeselo de nuevo al cliente.';
+    return;
+  }
+  req.status = 'encurso';
+  await saveRequests();
+  renderTechJob();
+}
+async function refreshTechJob(){ await loadDB(); renderTechJob(); }
+
+/* ---------- TECNICO: mis trabajos (historial) ---------- */
+async function renderTechJobs(){
+  await loadDB();
+  const el = document.getElementById('tech-jobs-list');
+  const mine = DB.requests.filter(r=>r.technicianUsername===SESSION.username).sort((a,b)=>b.createdAt-a.createdAt);
+  if(mine.length===0){
+    el.innerHTML = '<div class="empty-icon">🗂️</div><p class="center-text">Aún no has aceptado ningún trabajo.</p>';
+    return;
+  }
+  el.innerHTML = mine.map(r=>`
+    <div class="card" onclick="openTechJob('${r.id}')">
+      <div class="icon-badge">${SERVICES.find(s=>s.id===r.serviceId).icon}</div>
+      <div class="info"><b>${r.serviceName}</b><span>${r.barrio} · ${r.price} CUP</span></div>
+      <div class="badge ${statusClass(r)}">${statusLabel(r)}</div>
+    </div>`).join('');
+}
+
+/* ---------- Arranque ---------- */
+(async function init(){
+  try{
+    await loadDB();
+  }catch(e){
+    console.error('Storage error', e);
+  }
+  go('screen-auth');
+})();
+</script>
+</body>
+</html>
