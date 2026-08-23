@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ñañí — Servicios para tu hogar en Camagüey</title>
+<title>Servicios para tu hogar en Camagüey</title>
 <style>
   :root{
     --terracota:#b5502e; --terracota-dark:#8a3a20;
@@ -73,14 +73,14 @@
 <div id="phone">
 
   <div class="screen active" id="screen-loading">
-    <div class="loading" style="margin:auto;">Cargando Ñañí…</div>
+    <div class="loading" style="margin:auto;">Cargando…</div>
   </div>
 
   <!-- AUTH -->
   <div class="screen" id="screen-auth">
     <div style="padding:30px 6px 10px; text-align:center;">
       <div style="font-size:44px;">🏺</div>
-      <h1>Ñañí</h1>
+      <h1>Manos</h1>
       <p class="sub">Servicios para el hogar en Camagüey</p>
     </div>
 
@@ -130,7 +130,7 @@
 
   <!-- HOME CLIENTE -->
   <div class="screen" id="screen-home">
-    <header class="topbar"><span class="logo">🏺 Ñañí</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
+    <header class="topbar"><span class="logo">🏺 Manos</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
     <div style="padding-top:6px;">
       <h1 id="home-greeting">Buenas, vecino.</h1>
       <p class="sub">¿Qué se te rompió hoy? Conecta con técnicos verificados de tu barrio.</p>
@@ -220,8 +220,8 @@
 
   <!-- HOME TECNICO -->
   <div class="screen" id="screen-tech-home">
-    <header class="topbar"><span class="logo">🏺 Ñañí</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
-    <h1 id="tech-greeting">Buenas, socio.</h1>
+    <header class="topbar"><span class="logo">🏺 Manos</span><span style="margin-left:auto;font-weight:normal;font-size:12px;cursor:pointer;" onclick="doLogout()">Salir</span></header>
+    <h1 id="tech-greeting">Buenas, técnico.</h1>
     <p class="sub" id="tech-sub">Solicitudes disponibles en tu especialidad.</p>
     <div id="tech-request-list"></div>
     <nav class="tabbar">
@@ -231,13 +231,13 @@
     </nav>
   </div>
 
-  <!-- TRABAJO ACTIVO TECNICO -->
+  <!-- TRABAJO ACTIVO TÉCNICO -->
   <div class="screen" id="screen-tech-job">
     <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Trabajo</header>
     <div id="tech-job-content"></div>
   </div>
 
-  <!-- MIS TRABAJOS TECNICO -->
+  <!-- MIS TRABAJOS TÉCNICO -->
   <div class="screen" id="screen-tech-jobs">
     <header class="topbar"><span class="back" onclick="renderTechHome();go('screen-tech-home')">←</span>Mis trabajos</header>
     <div id="tech-jobs-list"></div>
